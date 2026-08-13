@@ -1,7 +1,54 @@
-# Tauri + React + Typescript
+# 目录同步工具（File Sync）
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+一个基于 Tauri + React 开发的 Windows 桌面小工具，用于维护多组「输入目录 → 输出目录」的目录对，一键将输入目录镜像同步到输出目录（输出目录会与输入目录完全一致，多余文件会被删除）。
 
-## Recommended IDE Setup
+## 功能特性
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- 添加/编辑/删除多个目录对，支持备注名，通过系统文件夹选择器选取目录
+- 勾选任意多个目录对批量同步，支持全选/取消全选
+- **镜像同步**：增量复制新增/更新的文件，并删除输出目录中输入目录没有的文件和空目录
+- 同步过程实时展示进度（当前文件、进度条），完成后展示复制/删除/跳过数量、耗时及错误详情
+- 目录对配置与勾选状态自动持久化，重启应用后自动恢复
+
+## 技术栈
+
+- [Tauri 2](https://tauri.app/)（Rust 后端，负责文件系统遍历与同步）
+- React + TypeScript + Vite
+- Tailwind CSS 4 + shadcn 风格组件（Radix UI Primitives）
+
+## 环境要求
+
+- [Node.js](https://nodejs.org/) 18+
+- [Rust](https://www.rust-lang.org/tools/install)（stable 工具链）
+- Windows 桌面开发环境（[Tauri 官方前置依赖](https://tauri.app/start/prerequisites/)，需安装 WebView2 运行时，Win11 一般已内置）
+
+## 安装与启动
+
+```bash
+# 安装前端依赖
+npm install
+
+# 开发模式启动（同时拉起 Vite 与 Tauri 窗口）
+npm run tauri dev
+```
+
+## 打包构建
+
+```bash
+npm run tauri build
+```
+
+构建产物（安装包/可执行文件）位于 `src-tauri/target/release/bundle/` 目录下。
+
+## 项目结构
+
+```
+src/                前端代码（React + TypeScript）
+  components/        UI 组件（目录对卡片、添加/编辑弹窗、同步日志面板）
+  lib/                Tauri 命令调用封装、类型定义
+src-tauri/          Rust 后端
+  src/config.rs       目录对配置读写（持久化到本地 JSON）
+  src/sync.rs         核心镜像同步算法
+  src/commands.rs     暴露给前端的 Tauri 命令
+docs/               设计文档
+```
