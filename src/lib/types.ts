@@ -16,7 +16,6 @@ export interface SyncProgress {
 export interface SyncResult {
   pair_id: string;
   copied: number;
-  deleted: number;
   skipped: number;
   errors: string[];
   duration_ms: number;

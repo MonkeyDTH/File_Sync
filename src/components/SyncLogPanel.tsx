@@ -49,7 +49,7 @@ export function SyncLogPanel({ syncing, progressByPair, results, pairsById }: Pr
                   {pairsById[r.pair_id]?.name || r.pair_id}
                 </span>
                 <span className="text-xs text-slate-400">
-                  复制 {r.copied}・删除 {r.deleted}・跳过 {r.skipped}・耗时 {r.duration_ms}ms
+                  复制 {r.copied}・跳过 {r.skipped}・耗时 {r.duration_ms}ms
                 </span>
               </div>
               {r.errors.length > 0 && (

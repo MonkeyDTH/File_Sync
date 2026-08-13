@@ -1,5 +1,4 @@
 use serde::Serialize;
-use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 use tauri::{AppHandle, Emitter};
@@ -19,13 +18,12 @@ pub struct SyncProgress {
 pub struct SyncResult {
     pub pair_id: String,
     pub copied: u32,
-    pub deleted: u32,
     pub skipped: u32,
     pub errors: Vec<String>,
     pub duration_ms: u64,
 }
 
-/// 对单个目录对执行镜像同步：输出目录最终与输入目录内容一致。
+/// 对单个目录对执行同步：仅将输入目录中新增/更新的文件复制到输出目录，不删除输出目录中多出的文件。
 pub fn sync_pair(app: &AppHandle, pair: &SyncPair) -> SyncResult {
     let start = std::time::Instant::now();
     let mut result = SyncResult {
@@ -44,7 +42,7 @@ pub fn sync_pair(app: &AppHandle, pair: &SyncPair) -> SyncResult {
     if source == target || target.starts_with(source) || source.starts_with(target) {
         result
             .errors
-            .push("输入目录与输出目录存在包含关系，已跳过以防误删".to_string());
+            .push("输入目录与输出目录存在包含关系，已跳过以防递归复制".to_string());
         result.duration_ms = start.elapsed().as_millis() as u64;
         return result;
     }
@@ -62,7 +60,6 @@ pub fn sync_pair(app: &AppHandle, pair: &SyncPair) -> SyncResult {
         .filter_map(|e| e.path().strip_prefix(source).ok().map(|p| p.to_path_buf()))
         .collect();
 
-    let source_set: HashSet<PathBuf> = source_entries.iter().cloned().collect();
     let total = source_entries.len();
 
     for (i, rel) in source_entries.iter().enumerate() {
@@ -99,46 +96,6 @@ pub fn sync_pair(app: &AppHandle, pair: &SyncPair) -> SyncResult {
             Err(e) => result
                 .errors
                 .push(format!("比较文件失败 {}: {e}", rel.display())),
-        }
-    }
-
-    // 镜像清理：删除输出目录中源目录没有的文件
-    let target_files: Vec<PathBuf> = WalkDir::new(target)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.file_type().is_file())
-        .filter_map(|e| e.path().strip_prefix(target).ok().map(|p| p.to_path_buf()))
-        .collect();
-
-    for rel in target_files {
-        if source_set.contains(&rel) {
-            continue;
-        }
-        let victim = target.join(&rel);
-        // 安全校验：确保待删除路径确实位于 target 目录树内
-        if !victim.starts_with(target) {
-            continue;
-        }
-        match fs::remove_file(&victim) {
-            Ok(_) => result.deleted += 1,
-            Err(e) => result
-                .errors
-                .push(format!("删除失败 {}: {e}", rel.display())),
-        }
-    }
-
-    // 自底向上清理空目录（不删除 target 根目录本身）
-    let mut dirs: Vec<PathBuf> = WalkDir::new(target)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.file_type().is_dir())
-        .map(|e| e.path().to_path_buf())
-        .filter(|p| p != target)
-        .collect();
-    dirs.sort_by_key(|p| std::cmp::Reverse(p.components().count()));
-    for dir in dirs {
-        if fs::read_dir(&dir).map(|mut r| r.next().is_none()).unwrap_or(false) {
-            let _ = fs::remove_dir(&dir);
         }
     }
 
