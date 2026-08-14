@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { Checkbox } from "./ui/checkbox";
+import { cn } from "../lib/utils";
 import { pickDirectory } from "../lib/api";
 import type { SyncPair } from "../lib/types";
 
@@ -18,6 +18,9 @@ interface Props {
   initial?: SyncPair | null;
   onSubmit: (data: { name: string; source: string; target: string; recursive: boolean }) => void;
 }
+
+const fieldClass =
+  "w-full border-b border-line-2 bg-transparent px-0 py-1.5 text-[13.5px] text-ink outline-none transition-colors placeholder:text-ink-3 focus:border-accent";
 
 export function PairDialog({ open, onOpenChange, initial, onSubmit }: Props) {
   const [name, setName] = useState("");
@@ -52,11 +55,13 @@ export function PairDialog({ open, onOpenChange, initial, onSubmit }: Props) {
           <DialogTitle>{initial ? "编辑目录对" : "添加目录对"}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">备注名（可选）</label>
+            <label className="mb-1 block font-mono text-[10.5px] uppercase tracking-wide text-ink-3">
+              备注名（可选）
+            </label>
             <input
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              className={fieldClass}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例如：项目A"
@@ -64,10 +69,12 @@ export function PairDialog({ open, onOpenChange, initial, onSubmit }: Props) {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">输入目录</label>
-            <div className="flex gap-2">
+            <label className="mb-1 block font-mono text-[10.5px] uppercase tracking-wide text-ink-3">
+              输入目录
+            </label>
+            <div className="flex items-end gap-2">
               <input
-                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className={cn(fieldClass, "font-mono text-[12.5px]")}
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
                 placeholder="选择输入目录"
@@ -79,10 +86,12 @@ export function PairDialog({ open, onOpenChange, initial, onSubmit }: Props) {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">输出目录</label>
-            <div className="flex gap-2">
+            <label className="mb-1 block font-mono text-[10.5px] uppercase tracking-wide text-ink-3">
+              输出目录
+            </label>
+            <div className="flex items-end gap-2">
               <input
-                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className={cn(fieldClass, "font-mono text-[12.5px]")}
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
                 placeholder="选择输出目录"
@@ -94,17 +103,43 @@ export function PairDialog({ open, onOpenChange, initial, onSubmit }: Props) {
           </div>
 
           {source && target && source === target && (
-            <p className="text-xs text-red-500">输入目录和输出目录不能相同</p>
+            <p className="-mt-3 text-xs text-danger">输入目录和输出目录不能相同</p>
           )}
 
-          <label className="flex items-center gap-2 text-sm text-slate-700">
-            <Checkbox checked={recursive} onCheckedChange={(v) => setRecursive(v === true)} />
-            作用于所有子目录（不勾选则仅同步该目录下第一层的文件）
-          </label>
+          <div>
+            <label className="mb-1.5 block font-mono text-[10.5px] uppercase tracking-wide text-ink-3">
+              同步范围
+            </label>
+            <div className="inline-flex overflow-hidden rounded-md border border-line-2">
+              <button
+                type="button"
+                onClick={() => setRecursive(false)}
+                className={cn(
+                  "px-3 py-1.5 text-[12.5px] font-medium transition-colors",
+                  !recursive ? "bg-accent text-paper" : "bg-paper text-ink-2 hover:bg-paper-2",
+                )}
+              >
+                仅当前层
+              </button>
+              <button
+                type="button"
+                onClick={() => setRecursive(true)}
+                className={cn(
+                  "border-l border-line-2 px-3 py-1.5 text-[12.5px] font-medium transition-colors",
+                  recursive ? "bg-accent text-paper" : "bg-paper text-ink-2 hover:bg-paper-2",
+                )}
+              >
+                含所有子目录
+              </button>
+            </div>
+            <p className="mt-1.5 text-[11.5px] text-ink-3">
+              {recursive ? "同步该目录及其所有层级子目录中的文件" : "仅同步该目录下第一层的文件"}
+            </p>
+          </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
             取消
           </Button>
           <Button

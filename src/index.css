@@ -1,10 +1,80 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "LXGW Neo XiHei Brand";
+  src: url("./assets/fonts/LXGWNeoXiHei-brand.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  /* 仅收录标题/品牌字实际用到的字符，压缩至 24KB */
+  unicode-range: U+0020-007E, U+50CF, U+52A0, U+5355, U+540C, U+5411, U+5730,
+    U+5BF9, U+5F55, U+672C, U+6B65, U+6DFB, U+76EE, U+7F16, U+8F91, U+955C, U+B7;
+}
+
 @theme {
-  --color-brand: #4f46e5;
+  --font-brand: "LXGW Neo XiHei Brand", var(--font-sans);
+
+  /* 暖白纸感中性色，向琥珀色微调 */
+  --color-paper: oklch(0.985 0.006 80);
+  --color-paper-2: oklch(0.96 0.009 75);
+  --color-ink: oklch(0.24 0.018 55);
+  --color-ink-2: oklch(0.48 0.016 55);
+  --color-ink-3: oklch(0.66 0.014 60);
+  --color-line: oklch(0.885 0.011 70);
+  --color-line-2: oklch(0.82 0.013 70);
+
+  /* 单一强调色：琥珀 / 黄铜，替代泛滥的紫蓝色 */
+  --color-accent: oklch(0.64 0.15 55);
+  --color-accent-hover: oklch(0.58 0.16 55);
+  --color-accent-soft: oklch(0.94 0.03 60);
+
+  --color-success: oklch(0.56 0.11 155);
+  --color-success-soft: oklch(0.95 0.03 155);
+  --color-danger: oklch(0.55 0.15 30);
+  --color-danger-soft: oklch(0.95 0.035 30);
+
+  --font-sans: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-ui: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
 }
 
 body {
   margin: 0;
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: var(--font-ui);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+
+::selection {
+  background-color: var(--color-accent-soft);
+  color: var(--color-ink);
+}
+
+/* 细窄滚动条，弱化存在感 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-line-2);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes overlay-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes dialog-in {
+  from { opacity: 0; scale: 0.97; }
+  to { opacity: 1; scale: 1; }
+}
+@keyframes dialog-out {
+  from { opacity: 1; scale: 1; }
+  to { opacity: 0; scale: 0.97; }
 }

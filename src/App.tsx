@@ -116,48 +116,73 @@ function App() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-4 bg-slate-50 p-6">
+    <main className="mx-auto flex min-h-screen max-w-2xl flex-col bg-paper px-6 pb-8 pt-9">
       <Toaster position="top-center" richColors />
 
-      <header className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FolderSync className="h-6 w-6 text-indigo-600" />
-          <h1 className="text-xl font-semibold text-slate-900">目录同步工具</h1>
+      <header className="flex items-end justify-between pb-5">
+        <div>
+          <p className="font-brand text-xs uppercase tracking-widest text-accent">
+            本地 · 单向镜像
+          </p>
+          <h1 className="mt-1 font-brand text-[30px] font-normal tracking-tight text-ink">
+            目录同步
+          </h1>
         </div>
         <Button
+          size="sm"
           onClick={() => {
             setEditingPair(null);
             setDialogOpen(true);
           }}
         >
-          <Plus className="h-4 w-4" />
-          添加目录对
+          <Plus className="h-3.5 w-3.5" />
+          新建目录对
         </Button>
       </header>
 
+      <div className="border-t border-line" />
+
       {pairs.length === 0 ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-slate-400">
-          <FolderSync className="h-10 w-10" />
-          <p>还没有目录对，添加你的第一个目录对开始使用</p>
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 py-20 text-center">
+          <div className="rounded-lg border border-dashed border-line-2 px-8 py-10">
+            <p className="text-[13.5px] text-ink-2">还没有目录对</p>
+            <p className="mt-1 text-[12px] text-ink-3">
+              添加一组输入 / 输出目录，开始单向镜像同步
+            </p>
+            <Button
+              size="sm"
+              className="mt-4"
+              onClick={() => {
+                setEditingPair(null);
+                setDialogOpen(true);
+              }}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              添加第一个目录对
+            </Button>
+          </div>
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2.5">
-            <label className="flex items-center gap-2 text-sm text-slate-600">
+          <div className="flex items-center justify-between border-b border-line py-3">
+            <label className="flex items-center gap-2 text-[12.5px] text-ink-2">
               <Checkbox checked={allSelected} onCheckedChange={(v) => toggleAll(v === true)} />
-              全选（已选 {selectedCount}/{pairs.length}）
+              全选
+              <span className="font-mono text-[11px] tabular-nums text-ink-3">
+                {selectedCount}/{pairs.length}
+              </span>
             </label>
-            <Button onClick={handleSync} disabled={selectedCount === 0 || syncing}>
+            <Button onClick={handleSync} disabled={selectedCount === 0 || syncing} size="sm">
               {syncing ? (
-                <RefreshCw className="h-4 w-4 animate-spin" />
+                <RefreshCw className="h-3.5 w-3.5 animate-spin" />
               ) : (
-                <FolderSync className="h-4 w-4" />
+                <FolderSync className="h-3.5 w-3.5" />
               )}
-              {syncing ? "同步中..." : "开始同步"}
+              {syncing ? "同步中…" : "开始同步"}
             </Button>
           </div>
 
-          <div className="space-y-2">
+          <div>
             {pairs.map((pair) => (
               <PairCard
                 key={pair.id}
