@@ -4,6 +4,7 @@ export interface SyncPair {
   source: string;
   target: string;
   selected: boolean;
+  recursive: boolean;
 }
 
 export interface SyncProgress {

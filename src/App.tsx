@@ -59,7 +59,12 @@ function App() {
     if (target) await updatePair(target);
   };
 
-  const handleSubmit = async (data: { name: string; source: string; target: string }) => {
+  const handleSubmit = async (data: {
+    name: string;
+    source: string;
+    target: string;
+    recursive: boolean;
+  }) => {
     try {
       if (editingPair) {
         const updated = { ...editingPair, ...data };
@@ -67,7 +72,7 @@ function App() {
         setPairs((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
         toast.success("已保存修改");
       } else {
-        const created = await addPair(data.name, data.source, data.target);
+        const created = await addPair(data.name, data.source, data.target, data.recursive);
         setPairs((prev) => [...prev, created]);
         toast.success("已添加目录对");
       }

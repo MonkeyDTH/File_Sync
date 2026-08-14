@@ -5,8 +5,8 @@ import type { SyncPair, SyncProgress, SyncResult } from "./types";
 
 export const listPairs = () => invoke<SyncPair[]>("list_pairs");
 
-export const addPair = (name: string, source: string, target: string) =>
-  invoke<SyncPair>("add_pair", { name, source, target });
+export const addPair = (name: string, source: string, target: string, recursive: boolean) =>
+  invoke<SyncPair>("add_pair", { name, source, target, recursive });
 
 export const updatePair = (pair: SyncPair) => invoke<void>("update_pair", { pair });
 

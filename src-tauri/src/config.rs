@@ -10,6 +10,8 @@ pub struct SyncPair {
     pub source: String,
     pub target: String,
     pub selected: bool,
+    #[serde(default)]
+    pub recursive: bool,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]

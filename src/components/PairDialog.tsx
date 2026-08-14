@@ -8,6 +8,7 @@ import {
   DialogFooter,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
 import { pickDirectory } from "../lib/api";
 import type { SyncPair } from "../lib/types";
 
@@ -15,19 +16,21 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initial?: SyncPair | null;
-  onSubmit: (data: { name: string; source: string; target: string }) => void;
+  onSubmit: (data: { name: string; source: string; target: string; recursive: boolean }) => void;
 }
 
 export function PairDialog({ open, onOpenChange, initial, onSubmit }: Props) {
   const [name, setName] = useState("");
   const [source, setSource] = useState("");
   const [target, setTarget] = useState("");
+  const [recursive, setRecursive] = useState(false);
 
   useEffect(() => {
     if (open) {
       setName(initial?.name ?? "");
       setSource(initial?.source ?? "");
       setTarget(initial?.target ?? "");
+      setRecursive(initial?.recursive ?? false);
     }
   }, [open, initial]);
 
@@ -93,6 +96,11 @@ export function PairDialog({ open, onOpenChange, initial, onSubmit }: Props) {
           {source && target && source === target && (
             <p className="text-xs text-red-500">输入目录和输出目录不能相同</p>
           )}
+
+          <label className="flex items-center gap-2 text-sm text-slate-700">
+            <Checkbox checked={recursive} onCheckedChange={(v) => setRecursive(v === true)} />
+            作用于所有子目录（不勾选则仅同步该目录下第一层的文件）
+          </label>
         </div>
 
         <DialogFooter>
@@ -102,7 +110,7 @@ export function PairDialog({ open, onOpenChange, initial, onSubmit }: Props) {
           <Button
             disabled={!canSubmit}
             onClick={() => {
-              onSubmit({ name, source, target });
+              onSubmit({ name, source, target, recursive });
               onOpenChange(false);
             }}
           >

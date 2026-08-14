@@ -1,0 +1,3 @@
+[build]
+# 将构建产物统一放到项目根目录下的 target/，避免嵌套在 src-tauri/ 里过深
+target-dir = "target"

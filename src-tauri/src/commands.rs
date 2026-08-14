@@ -10,7 +10,13 @@ pub fn list_pairs(app: AppHandle) -> Result<Vec<SyncPair>, String> {
 }
 
 #[tauri::command]
-pub fn add_pair(app: AppHandle, name: String, source: String, target: String) -> Result<SyncPair, String> {
+pub fn add_pair(
+    app: AppHandle,
+    name: String,
+    source: String,
+    target: String,
+    recursive: bool,
+) -> Result<SyncPair, String> {
     let mut config = load_config(&app)?;
     let pair = SyncPair {
         id: Uuid::new_v4().to_string(),
@@ -18,6 +24,7 @@ pub fn add_pair(app: AppHandle, name: String, source: String, target: String) ->
         source,
         target,
         selected: true,
+        recursive,
     };
     config.pairs.push(pair.clone());
     save_config(&app, &config)?;

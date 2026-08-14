@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Rust/Tauri 构建产物（已通过 .cargo/config.toml 移到根目录）
+/target
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -5,6 +5,7 @@
 ## 功能特性
 
 - 添加/编辑/删除多个目录对，支持备注名，通过系统文件夹选择器选取目录
+- **子目录范围可选**：每个目录对可单独设置是否作用于所有子目录（默认关闭，仅同步该目录下第一层的文件）
 - 勾选任意多个目录对批量同步，支持全选/取消全选
 - **仅新增/更新同步**：增量复制输入目录中新增或有变化的文件，输出目录中原有的其他文件保持不变
 - 同步过程实时展示进度（当前文件、进度条），完成后展示复制/跳过数量、耗时及错误详情
@@ -38,7 +39,14 @@ npm run tauri dev
 npm run tauri build
 ```
 
-构建产物（安装包/可执行文件）位于 `src-tauri/target/release/bundle/` 目录下。
+构建产物（安装包/可执行文件）位于项目根目录的 `target/release/bundle/` 下：
+
+```
+target/release/bundle/msi/目录同步工具_0.1.0_x64_zh-CN.msi   # MSI 安装包
+target/release/bundle/nsis/目录同步工具_0.1.0_x64-setup.exe  # NSIS 安装包
+```
+
+> `target/` 是 Cargo 的编译缓存目录（已通过 `.cargo/config.toml` 从 `src-tauri/target` 移到根目录，并加入 `.gitignore`），体积较大（约 1GB+）属正常现象，可随时用 `cargo clean` 清理，不影响最终安装包（仅几 MB）。
 
 ## 项目结构
 

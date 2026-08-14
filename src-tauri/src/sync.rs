@@ -52,8 +52,12 @@ pub fn sync_pair(app: &AppHandle, pair: &SyncPair) -> SyncResult {
         return result;
     }
 
-    // 收集所有源文件的相对路径
-    let source_entries: Vec<PathBuf> = WalkDir::new(source)
+    // 收集源文件的相对路径；未开启递归时仅同步该目录下第一层的文件
+    let mut walker = WalkDir::new(source);
+    if !pair.recursive {
+        walker = walker.max_depth(1);
+    }
+    let source_entries: Vec<PathBuf> = walker
         .into_iter()
         .filter_map(|e| e.ok())
         .filter(|e| e.file_type().is_file())
